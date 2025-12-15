@@ -2,8 +2,9 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import { db } from "./config/db.js";
-// import authRoute from "./routes/authRoute.js";
-// import ProductRoute from "./routes/productRoute.js";
+import authRoute from "./routes/authRoute.js";
+import suppilerRoute from "./routes/suppilerRoute.js";
+import productRoute from "./routes/productRoute.js";
 
 dotenv.config();
 
@@ -28,8 +29,9 @@ async function testDBConnection() {
 testDBConnection();
 //
 
-// app.use(authRoute);
-// app.use(ProductRoute);
+app.use(authRoute);
+app.use(suppilerRoute);
+app.use(productRoute);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
