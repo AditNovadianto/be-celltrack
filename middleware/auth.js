@@ -17,7 +17,7 @@ export function verifyToken(req, res, next) {
     // Jika bukan admin dan bukan supplier, maka hanya izinkan GET (read)
     if (
       req.method !== "GET" &&
-      !["1", "2"].includes(decoded.id_role) &&
+      ![1, 2].includes(decoded.id_role) &&
       !decoded.id_supplier
     ) {
       return res.status(403).json({

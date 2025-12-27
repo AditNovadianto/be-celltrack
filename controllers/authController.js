@@ -8,7 +8,7 @@ const signToken = (user) => {
     { sub: user.id_user, nama_user: user.nama_user, id_role: user.id_role },
     process.env.JWT_SECRET,
     {
-      expiresIn: "5min",
+      expiresIn: "15min",
       issuer: "my-app",
       audience: "my-app-users",
       algorithm: "HS256",
@@ -99,6 +99,19 @@ export const signIn = async (req, res) => {
     return res.status(200).json({ user: sanitizeUser(user), token });
   } catch (err) {
     console.error("signIn error:", err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const getAllUsers = async (req, res) => {
+  try {
+    const [rows] = await db.query(
+      "SELECT id_user, nama_user, email, age, alamat, id_toko, id_role FROM users"
+    );
+
+    return res.status(200).json({ users: rows });
+  } catch (err) {
+    console.error("getAllUsers error:", err);
     return res.status(500).json({ error: "Internal server error" });
   }
 };

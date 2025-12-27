@@ -1,5 +1,6 @@
 import * as transactionModel from "../models/transactionModel.js";
 
+// Create
 export const createTransaction = async (req, res) => {
   const {
     item,
@@ -9,7 +10,6 @@ export const createTransaction = async (req, res) => {
     total,
     jenis_transaksi,
     id_pelanggan,
-    id_produk,
   } = req.body;
 
   try {
@@ -33,5 +33,34 @@ export const createTransaction = async (req, res) => {
       message: "Failed to create transaction",
       error: error.message,
     });
+  }
+};
+
+// Read
+export const getAllTransactions = async (req, res) => {
+  try {
+    const transactions = await transactionModel.getAllTransactions();
+
+    res.status(200).json({ transactions });
+  } catch (error) {
+    console.error("Error fetching transactions:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const getTransactionById = async (req, res) => {
+  const { id_transaksi } = req.params;
+
+  try {
+    const transaction = await transactionModel.getTransactionById(id_transaksi);
+
+    if (!transaction) {
+      return res.status(404).json({ error: "Transaction not found" });
+    }
+
+    res.status(200).json({ transaction });
+  } catch (error) {
+    console.error("Error fetching transaction by ID:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };

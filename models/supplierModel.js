@@ -12,7 +12,7 @@ const signToken = (user) => {
     },
     process.env.JWT_SECRET,
     {
-      expiresIn: "5min",
+      expiresIn: "15min",
       issuer: "my-app",
       audience: "my-app-users",
       algorithm: "HS256",
@@ -106,6 +106,19 @@ export async function signInSupplier(email, password) {
     };
   } catch (error) {
     console.error("Error signing in supplier:", error);
+    throw error;
+  }
+}
+
+export async function getAllSuppliers() {
+  try {
+    const [rows] = await db.query(
+      "SELECT id_supplier, nama_supplier, email, alamat_supplier, no_telephon, kategori_supplier, id_toko FROM supplier"
+    );
+
+    return rows;
+  } catch (error) {
+    console.error("Error retrieving suppliers:", error);
     throw error;
   }
 }

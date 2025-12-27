@@ -2,9 +2,13 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import { db } from "./config/db.js";
+import { connectMongoDB } from "./config/db_mongo.js";
 import authRoute from "./routes/authRoute.js";
 import suppilerRoute from "./routes/suppilerRoute.js";
 import productRoute from "./routes/productRoute.js";
+import transactionRoute from "./routes/transactionRoute.js";
+import feedbackRoute from "./routes/feedbackRoute.js";
+import customerRoute from "./routes/customerRoute.js";
 
 dotenv.config();
 
@@ -14,11 +18,11 @@ app.use(express.json());
 
 const PORT = process.env.PORT || 3000;
 
-// Test database connection
+// Test database SQL connection
 async function testDBConnection() {
   try {
     await db.query("SELECT 1");
-    console.log("✅ Database connected successfully!");
+    console.log("✅ Database SQL connected successfully!");
     return true;
   } catch (error) {
     console.error("❌ Failed to connect to the database:", error.message);
@@ -29,9 +33,16 @@ async function testDBConnection() {
 testDBConnection();
 //
 
+// Test database MongoDB connection
+connectMongoDB();
+//
+
 app.use(authRoute);
 app.use(suppilerRoute);
 app.use(productRoute);
+app.use(transactionRoute);
+app.use(feedbackRoute);
+app.use(customerRoute);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

@@ -45,3 +45,14 @@ export const signInSupplier = async (req, res) => {
     return res.status(500).json({ error: "Internal server error" });
   }
 };
+
+export const getAllSuppliers = async (req, res) => {
+  try {
+    const suppliers = await supplierModel.getAllSuppliers();
+
+    return res.status(200).json({ suppliers });
+  } catch (error) {
+    console.error("getAllSuppliers error:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
