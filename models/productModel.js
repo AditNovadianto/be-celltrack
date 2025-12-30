@@ -86,6 +86,15 @@ export async function updateProduct(
   return result.affectedRows;
 }
 
+export async function assignProductToEmployeeByEmployeeId(id_produk, id_user) {
+  const [result] = await db.query(
+    "UPDATE produk SET id_user = ? WHERE id_produk = ?",
+    [id_user, id_produk]
+  );
+
+  return result.affectedRows;
+}
+
 // Delete
 export async function deleteProduct(id_produk) {
   const [result] = await db.query("DELETE FROM produk WHERE id_produk = ?", [

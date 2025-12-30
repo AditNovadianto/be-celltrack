@@ -1,4 +1,5 @@
 import { db } from "../config/db.js";
+import Notification from "./notificationModel.js";
 
 // Create
 export async function createTransaction(
@@ -54,6 +55,8 @@ export async function createDetailTransaction(
       [quantity, subtotal, total, id_transaksi, id_produk]
     );
 
+    await updateStokProduk(id_produk, quantity);
+
     return { insertId: insertRes.insertId };
   } catch (error) {
     console.error("Error creating detail transaction:", error);
@@ -93,6 +96,35 @@ export async function getTransactionById(id_transaksi) {
     return { ...rows[0], detail: detailRows };
   } catch (error) {
     console.error("Error fetching transaction by ID:", error);
+    throw error;
+  }
+}
+
+// Update
+export async function updateStokProduk(id_produk, quantity) {
+  try {
+    const [result] = await db.query(
+      "UPDATE produk SET stok = stok - ? WHERE id_produk = ?",
+      [quantity, id_produk]
+    );
+
+    const [[product]] = await db.query(
+      "SELECT nama_produk, stok FROM produk WHERE id_produk = ?",
+      [id_produk]
+    );
+
+    if (product && product.stok < 5) {
+      await Notification.create({
+        id_produk,
+        stok: product.stok,
+        message: `Stok produk ${product.nama_produk} tersisa ${product.stok}`,
+        read: false,
+      });
+    }
+
+    return result;
+  } catch (error) {
+    console.error("Error updating stock product:", error);
     throw error;
   }
 }

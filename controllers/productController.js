@@ -109,6 +109,29 @@ export const updateProduct = async (req, res) => {
   }
 };
 
+export const assignProductToEmployeeByEmployeeId = async (req, res) => {
+  const { id } = req.params;
+  const { id_user } = req.body;
+
+  try {
+    const affectedRows = await productModel.assignProductToEmployeeByEmployeeId(
+      id,
+      id_user
+    );
+
+    if (affectedRows === 0) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    return res
+      .status(200)
+      .json({ message: "Product assigned to employee successfully" });
+  } catch (error) {
+    console.error("assignProductToEmployeeByEmployeeId error:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 // Delete
 export const deleteProduct = async (req, res) => {
   const { id } = req.params;
