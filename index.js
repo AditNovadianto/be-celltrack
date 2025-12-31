@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
+// import dotenv from "dotenv";
 import { db } from "./config/db.js";
 import { connectMongoDB } from "./config/db_mongo.js";
 import authRoute from "./routes/authRoute.js";
@@ -11,7 +11,7 @@ import feedbackRoute from "./routes/feedbackRoute.js";
 import customerRoute from "./routes/customerRoute.js";
 import notificationRoute from "./routes/notificationRoute.js";
 
-dotenv.config();
+// dotenv.config();
 
 const app = express();
 // app.use(cors());
@@ -61,6 +61,6 @@ app.use(feedbackRoute);
 app.use(customerRoute);
 app.use(notificationRoute);
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+// app.listen(PORT, () => {
+//   console.log(`Server is running on port ${PORT}`);
+// });
