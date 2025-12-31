@@ -38,6 +38,10 @@ testDBConnection();
 connectMongoDB();
 //
 
+app.get("/", (req, res) => {
+  res.send("Welcome to the CellTrack API");
+});
+
 app.use(authRoute);
 app.use(suppilerRoute);
 app.use(productRoute);
