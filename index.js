@@ -61,6 +61,8 @@ app.use(feedbackRoute);
 app.use(customerRoute);
 app.use(notificationRoute);
 
+export default app;
+
 // app.listen(PORT, () => {
 //   console.log(`Server is running on port ${PORT}`);
 // });
