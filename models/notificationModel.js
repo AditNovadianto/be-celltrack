@@ -8,7 +8,14 @@ const notificationSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-  read: Boolean,
+  id_supplier: Number,
+  readBy: [
+    {
+      role: String,
+      id: Number,
+      readAt: Date,
+    },
+  ],
 });
 
 export default mongoose.model("Notification", notificationSchema);

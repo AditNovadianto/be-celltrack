@@ -132,6 +132,23 @@ export const assignProductToEmployeeByEmployeeId = async (req, res) => {
   }
 };
 
+export const reStockProduct = async (req, res) => {
+  const { id_produk, newStock } = req.body;
+
+  try {
+    const affectedRows = await productModel.reStockProduct(id_produk, newStock);
+
+    if (affectedRows === 0) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    return res.status(200).json({ message: "Product restocked successfully" });
+  } catch (error) {
+    console.error("reStockProduct error:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 // Delete
 export const deleteProduct = async (req, res) => {
   const { id } = req.params;

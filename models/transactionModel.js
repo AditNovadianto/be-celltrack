@@ -109,7 +109,7 @@ export async function updateStokProduk(id_produk, quantity) {
     );
 
     const [[product]] = await db.query(
-      "SELECT nama_produk, stok FROM produk WHERE id_produk = ?",
+      "SELECT nama_produk, stok, id_supplier FROM produk WHERE id_produk = ?",
       [id_produk]
     );
 
@@ -118,7 +118,8 @@ export async function updateStokProduk(id_produk, quantity) {
         id_produk,
         stok: product.stok,
         message: `Stok produk ${product.nama_produk} tersisa ${product.stok}`,
-        read: false,
+        id_supplier: product.id_supplier,
+        readBy: [],
       });
     }
 

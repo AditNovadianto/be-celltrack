@@ -8,6 +8,6 @@ import {
 const router = express.Router();
 
 router.get("/getAllNotifications", verifyToken, getAllNotifications);
-router.put("/markNotificationAsRead/:id", verifyToken, markNotificationAsRead);
+router.post("/markNotificationAsRead/:id", verifyToken, markNotificationAsRead);
 
 export default router;

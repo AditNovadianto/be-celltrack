@@ -4,6 +4,7 @@ import {
   deleteProduct,
   getAllProducts,
   getProductById,
+  reStockProduct,
   storeProducts,
   updateProduct,
 } from "../controllers/productController.js";
@@ -20,6 +21,7 @@ router.put(
   verifyToken,
   assignProductToEmployeeByEmployeeId
 );
+router.put("/reStockProduct", verifyToken, reStockProduct);
 router.delete("/deleteProduct/:id", verifyToken, deleteProduct);
 
 export default router;
