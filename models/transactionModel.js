@@ -1,6 +1,19 @@
 import { db } from "../config/db.js";
 import Notification from "./notificationModel.js";
 
+function generateInvoiceNumber() {
+  const now = new Date();
+
+  const date =
+    now.getFullYear().toString() +
+    String(now.getMonth() + 1).padStart(2, "0") +
+    String(now.getDate()).padStart(2, "0");
+
+  const random = Math.random().toString(36).substring(2, 7).toUpperCase();
+
+  return `TRX-${date}-${random}`;
+}
+
 // Create
 export async function createTransaction(
   item,
@@ -12,9 +25,12 @@ export async function createTransaction(
   id_pelanggan
 ) {
   try {
+    const invoiceNumber = generateInvoiceNumber();
+
     const [insertRes] = await db.query(
-      "INSERT INTO transaksi (item, tanggal_transaksi, quantity, subtotal, total, jenis_transaksi, id_pelanggan) VALUES (?, ?, ?, ?, ?, ?, ?)",
+      "INSERT INTO transaksi (invoice_number, item, tanggal_transaksi, quantity, subtotal, total, jenis_transaksi, id_pelanggan) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
       [
+        invoiceNumber,
         JSON.stringify(item),
         tanggal_transaksi,
         quantity,
