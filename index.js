@@ -11,6 +11,8 @@ import feedbackRoute from "./routes/feedbackRoute.js";
 import customerRoute from "./routes/customerRoute.js";
 import notificationRoute from "./routes/notificationRoute.js";
 import serviceRequestRoute from "./routes/serviceRequestRoute.js";
+import technicianRoute from "./routes/technicianRoute.js";
+import serviceRequestStatusRoute from "./routes/serviceRequestStatusRoute.js";
 
 dotenv.config();
 
@@ -51,6 +53,8 @@ app.use(feedbackRoute);
 app.use(customerRoute);
 app.use(notificationRoute);
 app.use(serviceRequestRoute);
+app.use(technicianRoute);
+app.use(serviceRequestStatusRoute);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
