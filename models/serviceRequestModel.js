@@ -13,7 +13,7 @@ export async function createServiceRequest(
 ) {
   try {
     const [insertRes] = await db.query(
-      "INSERT INTO service_request (nama_pelanggan, keterangan, tanggal_mulai, tanggal_selesai, status, harga, id_pelanggan) VALUES (?, ?, ?, ?, ?, ?, ?)",
+      "INSERT INTO service_request (nama_pelanggan, keterangan, tanggal_mulai, tanggal_selesai, status, harga, status_pembayaran, id_pelanggan) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
       [
         nama_pelanggan,
         keterangan,
@@ -21,6 +21,7 @@ export async function createServiceRequest(
         tanggal_selesai,
         status,
         harga,
+        "UNPAID",
         id_pelanggan,
       ]
     );
