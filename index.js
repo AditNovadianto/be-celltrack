@@ -13,6 +13,7 @@ import notificationRoute from "./routes/notificationRoute.js";
 import serviceRequestRoute from "./routes/serviceRequestRoute.js";
 import technicianRoute from "./routes/technicianRoute.js";
 import serviceRequestStatusRoute from "./routes/serviceRequestStatusRoute.js";
+import paymentRoute from "./routes/paymentRoute.js";
 
 dotenv.config();
 
@@ -55,6 +56,7 @@ app.use(notificationRoute);
 app.use(serviceRequestRoute);
 app.use(technicianRoute);
 app.use(serviceRequestStatusRoute);
+app.use(paymentRoute);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

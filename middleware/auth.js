@@ -19,7 +19,8 @@ export function verifyToken(req, res, next) {
       req.method !== "GET" &&
       ![1, 2].includes(decoded.id_role) &&
       !decoded.id_supplier &&
-      !decoded.id_teknisi
+      !decoded.id_teknisi &&
+      !decoded.id_pelanggan
     ) {
       return res.status(403).json({
         error: "Access denied",

@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const feedbackSchema = new mongoose.Schema(
   {
-    user_id: {
+    id_pelanggan: {
       type: String,
       required: true,
       trim: true,

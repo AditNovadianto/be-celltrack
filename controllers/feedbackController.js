@@ -2,17 +2,17 @@ import Feedback from "../models/feedbackModel.js";
 
 export const createFeedback = async (req, res) => {
   try {
-    const { user_id, name, email, message, rating } = req.body;
+    const { id_pelanggan, name, email, message, rating } = req.body;
 
     // Validasi sederhana
-    if (!user_id || !name || !email || !message) {
+    if (!id_pelanggan || !name || !email || !message) {
       return res.status(400).json({
-        message: "user_id, name, email, dan message wajib diisi",
+        message: "id_pelanggan, name, email, dan message wajib diisi",
       });
     }
 
     const feedback = await Feedback.create({
-      user_id,
+      id_pelanggan,
       name,
       email,
       message,
@@ -32,10 +32,10 @@ export const createFeedback = async (req, res) => {
 };
 
 export const getFeedbackByUserId = async (req, res) => {
-  const { user_id } = req.params;
+  const { id_pelanggan } = req.params;
 
   try {
-    const feedbacks = await Feedback.find({ user_id });
+    const feedbacks = await Feedback.find({ id_pelanggan });
 
     res.status(200).json({
       message: "Feedbacks retrieved successfully",

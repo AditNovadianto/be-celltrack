@@ -45,6 +45,21 @@ export const getAllServiceRequests = async (req, res) => {
   }
 };
 
+export const getServiceRequestById = async (req, res) => {
+  const { kode_service } = req.body;
+
+  try {
+    const serviceRequests = await serviceRequestModel.getServiceRequestById(
+      kode_service
+    );
+
+    return res.status(200).json(serviceRequests);
+  } catch (error) {
+    console.error("getServiceRequestById error:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 // Update
 export const takeServiceRequest = async (req, res) => {
   try {
@@ -86,6 +101,27 @@ export const updateStatusServiceRequest = async (req, res) => {
       .json({ message: "Update Status Service Request updated successfully" });
   } catch (error) {
     console.error("updateStatusServiceRequest error:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const cancelServiceRequest = async (req, res) => {
+  try {
+    const { id_service_request } = req.body;
+
+    const affectedRows = await serviceRequestModel.cancelServiceRequest(
+      id_service_request
+    );
+
+    if (affectedRows === 0) {
+      return res.status(404).json({ message: "Service Request not found" });
+    }
+
+    return res.status(200).json({
+      message: "Canceled Status Service Request updated successfully",
+    });
+  } catch (error) {
+    console.error("canceledServiceRequest error:", error);
     return res.status(500).json({ error: "Internal server error" });
   }
 };

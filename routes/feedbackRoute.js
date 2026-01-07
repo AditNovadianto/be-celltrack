@@ -7,6 +7,6 @@ import {
 const router = express.Router();
 
 router.post("/submitFeedback", createFeedback);
-router.get("/getFeedbackByUserId/:user_id", getFeedbackByUserId);
+router.get("/getFeedbackByUserId/:id_pelanggan", getFeedbackByUserId);
 
 export default router;

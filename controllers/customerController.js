@@ -1,5 +1,24 @@
 import * as customerModel from "../models/customerModel.js";
 
+export const signInCustomer = async (req, res) => {
+  const { kode_service, email } = req.body;
+
+  try {
+    const result = await customerModel.signInCustomer(kode_service, email);
+
+    if (!result) {
+      return res.status(401).json({ error: "Invalid kode_service or email" });
+    }
+
+    const { customer, serviceRequest, token } = result;
+
+    return res.status(200).json({ customer, serviceRequest, token });
+  } catch (error) {
+    console.error("signInCustomer error:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 export const createCustomer = async (req, res) => {
   const { nama_pelanggan, email, dob, no_telephon } = req.body;
 
