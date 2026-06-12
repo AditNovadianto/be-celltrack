@@ -16,7 +16,7 @@ const signToken = (user) => {
       issuer: "my-app",
       audience: "my-app-users",
       algorithm: "HS256",
-    }
+    },
   );
 };
 
@@ -36,7 +36,7 @@ export async function signInCustomer(kode_service, email) {
        FROM pelanggan
        WHERE email = ?
        LIMIT 1`,
-      [email]
+      [email],
     );
 
     if (rowsCustomer.length === 0) {
@@ -78,7 +78,7 @@ export async function createCustomer(nama_pelanggan, email, dob, no_telephon) {
   try {
     const [insertRes] = await db.query(
       "INSERT INTO pelanggan (nama_pelanggan, email, dob, no_telephon, id_toko) VALUES (?, ?, ?, ?, ?)",
-      [nama_pelanggan, email, dob, no_telephon, 1]
+      [nama_pelanggan, email, dob, no_telephon, 1],
     );
 
     return { insertId: insertRes.insertId };
@@ -91,7 +91,7 @@ export async function createCustomer(nama_pelanggan, email, dob, no_telephon) {
 export async function getAllCustomers() {
   try {
     const [rows] = await db.query(
-      "SELECT * FROM pelanggan ORDER BY id_pelanggan DESC"
+      "SELECT * FROM pelanggan ORDER BY id_pelanggan DESC",
     );
 
     return rows;
@@ -101,17 +101,31 @@ export async function getAllCustomers() {
   }
 }
 
+export async function getCustomerById(id_customer) {
+  try {
+    const [rows] = await db.query(
+      "SELECT * FROM pelanggan WHERE id_pelanggan = ?",
+      [id_customer],
+    );
+
+    return rows[0];
+  } catch (error) {
+    console.error("Error fetching customers by Id:", error);
+    throw error;
+  }
+}
+
 export async function updateCustomerById(
   id_pelanggan,
   nama_pelanggan,
   email,
   dob,
-  no_telephon
+  no_telephon,
 ) {
   try {
     const [updateRes] = await db.query(
       "UPDATE pelanggan SET nama_pelanggan = ?, email = ?, dob = ?, no_telephon = ? WHERE id_pelanggan = ?",
-      [nama_pelanggan, email, dob, no_telephon, id_pelanggan]
+      [nama_pelanggan, email, dob, no_telephon, id_pelanggan],
     );
 
     return updateRes;
@@ -125,7 +139,7 @@ export async function deleteCustomerById(id_pelanggan) {
   try {
     const [deleteRes] = await db.query(
       "DELETE FROM pelanggan WHERE id_pelanggan = ?",
-      [id_pelanggan]
+      [id_pelanggan],
     );
 
     return deleteRes;

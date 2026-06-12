@@ -27,7 +27,7 @@ export const createCustomer = async (req, res) => {
       nama_pelanggan,
       email,
       dob,
-      no_telephon
+      no_telephon,
     );
     res.status(201).json({ id: result.insertId });
   } catch (error) {
@@ -46,6 +46,19 @@ export const getAllCustomers = async (req, res) => {
   }
 };
 
+export const getCustomerById = async (req, res) => {
+  const { id_customer } = req.params;
+
+  try {
+    const customer = await customerModel.getCustomerById(id_customer);
+
+    res.status(200).json({ customer });
+  } catch (error) {
+    console.error("Error fetching customers by Id:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 export const updateCustomerById = async (req, res) => {
   try {
     const { id_pelanggan } = req.params;
@@ -56,7 +69,7 @@ export const updateCustomerById = async (req, res) => {
       nama_pelanggan,
       email,
       dob,
-      no_telephon
+      no_telephon,
     );
 
     res.status(200).json({ message: "Customer updated successfully" });

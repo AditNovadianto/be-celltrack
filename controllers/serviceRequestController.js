@@ -20,7 +20,7 @@ export const createServiceRequest = async (req, res) => {
       tanggal_selesai,
       status,
       harga,
-      id_pelanggan
+      id_pelanggan,
     );
 
     return res.status(201).json({
@@ -49,9 +49,8 @@ export const getServiceRequestById = async (req, res) => {
   const { kode_service } = req.body;
 
   try {
-    const serviceRequests = await serviceRequestModel.getServiceRequestById(
-      kode_service
-    );
+    const serviceRequests =
+      await serviceRequestModel.getServiceRequestById(kode_service);
 
     return res.status(200).json(serviceRequests);
   } catch (error) {
@@ -67,7 +66,7 @@ export const takeServiceRequest = async (req, res) => {
 
     const affectedRows = await serviceRequestModel.takeServiceRequest(
       id_service_request,
-      id_teknisi
+      id_teknisi,
     );
 
     if (affectedRows === 0) {
@@ -89,11 +88,16 @@ export const updateStatusServiceRequest = async (req, res) => {
 
     const affectedRows = await serviceRequestModel.updateStatusServiceRequest(
       id_service_request,
-      status
+      status,
     );
 
     if (affectedRows === 0) {
       return res.status(404).json({ message: "Service Request not found" });
+    }
+
+    // Push Email Notification if the status Service Request is DONE
+    if (status === "DONE") {
+      await serviceRequestModel.pushEmailNotification(id_service_request);
     }
 
     return res
@@ -109,9 +113,8 @@ export const cancelServiceRequest = async (req, res) => {
   try {
     const { id_service_request } = req.body;
 
-    const affectedRows = await serviceRequestModel.cancelServiceRequest(
-      id_service_request
-    );
+    const affectedRows =
+      await serviceRequestModel.cancelServiceRequest(id_service_request);
 
     if (affectedRows === 0) {
       return res.status(404).json({ message: "Service Request not found" });
