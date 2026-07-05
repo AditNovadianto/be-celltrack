@@ -1,4 +1,5 @@
 import * as productModel from "../models/productModel.js";
+import ExcelJS from "exceljs";
 
 // Create
 export const storeProducts = async (req, res) => {
@@ -24,7 +25,7 @@ export const storeProducts = async (req, res) => {
       stok,
       approved,
       id_user,
-      id_supplier
+      id_supplier,
     );
 
     return res
@@ -95,7 +96,7 @@ export const updateProduct = async (req, res) => {
       harga_beli,
       harga_jual,
       stok,
-      approved
+      approved,
     );
 
     if (affectedRows === 0) {
@@ -116,7 +117,7 @@ export const assignProductToEmployeeByEmployeeId = async (req, res) => {
   try {
     const affectedRows = await productModel.assignProductToEmployeeByEmployeeId(
       id,
-      id_user
+      id_user,
     );
 
     if (affectedRows === 0) {
@@ -172,5 +173,75 @@ export const deleteProduct = async (req, res) => {
   } catch (error) {
     console.error("deleteProduct error:", error);
     return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+// Export Products Data to Excel
+export const exportProductsExcel = async (req, res) => {
+  try {
+    const products = await productModel.getAllProducts();
+
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Products");
+
+    worksheet.columns = [
+      { header: "No", key: "no", width: 10 },
+      { header: "SKU", key: "sku_produk", width: 20 },
+      { header: "Kategori", key: "kategori_produk", width: 20 },
+      { header: "Nama Produk", key: "nama_produk", width: 30 },
+      { header: "Harga Beli", key: "harga_beli", width: 15 },
+      { header: "Harga Jual", key: "harga_jual", width: 15 },
+      { header: "Profit", key: "profit", width: 15 },
+      { header: "Stok", key: "stok", width: 10 },
+      { header: "Status", key: "status", width: 15 },
+    ];
+
+    products.forEach((product, index) => {
+      const hargaBeli = Number(product.harga_beli);
+      const hargaJual = Number(product.harga_jual);
+
+      worksheet.addRow({
+        no: index + 1,
+        sku_produk: product.sku_produk,
+        kategori_produk: product.kategori_produk,
+        nama_produk: product.nama_produk,
+        harga_beli: hargaBeli,
+        harga_jual: hargaJual,
+        profit: hargaJual - hargaBeli,
+        stok: product.stok,
+        status: product.approved ? "Approved" : "Pending",
+      });
+    });
+
+    // Header style
+    worksheet.getRow(1).font = {
+      bold: true,
+    };
+
+    // Format currency
+    ["harga_beli", "harga_jual", "profit"].forEach((key) => {
+      worksheet.getColumn(key).numFmt = '"Rp" #,##0';
+    });
+
+    // Nama file
+    const fileName = `products-${Date.now()}.xlsx`;
+
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    );
+
+    res.setHeader("Content-Disposition", `attachment; filename="${fileName}"`);
+
+    await workbook.xlsx.write(res);
+
+    res.end();
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to export products",
+    });
   }
 };
