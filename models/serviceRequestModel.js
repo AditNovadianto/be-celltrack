@@ -216,7 +216,7 @@ export async function pushEmailNotification(id_service_request) {
 
                 <div style="text-align:center; margin:30px 0;">
                   <a
-                    href="http://localhost:5173/signInCustomer"
+                    href="${process.env.FRONTEND_URL}/signInCustomer"
                     style="
                       background: linear-gradient(135deg, #16a34a, #22c55e);
                       color: #ffffff;
