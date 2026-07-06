@@ -3,8 +3,7 @@
 ## CellTrack Backend API - be-celltrack
 
 Repository: https://github.com/AditNovadianto/be-celltrack  
-Template acuan: CBC Documentation Templates - README for Software  
-Dokumen disusun berdasarkan repository, ERD, dan tree file yang dilampirkan.
+Template acuan: CBC Documentation Templates - README for Software
 
 ---
 
@@ -52,7 +51,7 @@ Tech stack utama:
 | MySQL/MariaDB           | Database relasional utama.                                                 |
 | MongoDB                 | Database dokumen untuk feedback, notification, dan service request status. |
 | Midtrans account        | Untuk server key dan virtual account payment.                              |
-| Email SMTP/app password | Untuk fitur email notification bila digunakan.                             |
+| Email SMTP/app password | Untuk fitur email notification.                                            |
 | Postman/Thunder Client  | Untuk pengujian endpoint API.                                              |
 
 ### 3.2 Installing
@@ -302,11 +301,17 @@ Catatan deployment:
 
 ## 12. Contributing
 
-1. Buat branch baru dari `main`.
-2. Ikuti struktur folder yang sudah ada.
-3. Tambahkan validasi input dan error handling.
-4. Uji endpoint sebelum pull request.
-5. Dokumentasikan endpoint baru pada SCD/README.
+Kontribusi pada project dilakukan melalui version control GitHub. Setiap perubahan sebaiknya dilakukan melalui branch terpisah, kemudian dilakukan review sebelum digabungkan ke branch utama.
+
+Alur kontribusi yang disarankan:
+
+1. Clone repository.
+2. Buat branch baru sesuai fitur atau perbaikan.
+3. Lakukan perubahan kode.
+4. Jalankan testing.
+5. Commit perubahan dengan pesan yang jelas.
+6. Push branch ke repository.
+7. Ajukan pull request atau merge request.
 
 ---
 
@@ -331,5 +336,3 @@ Catatan deployment:
 
 - CBC Documentation Templates - README for Software: https://compbiocore.github.io/cbc-documentation-templates/readme/
 - Repository GitHub: https://github.com/AditNovadianto/be-celltrack
-- ERD Conceptual, Logical, dan Physical Model CellTrack yang dilampirkan.
-- Tree file repository be-celltrack yang dilampirkan.
