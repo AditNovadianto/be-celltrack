@@ -180,6 +180,112 @@ Entity utama:
 | detail_transaksi | id_detail_transaksi | Detail item transaksi.                        |
 | log_transaksi    | id_log_transaksi    | Riwayat transaksi.                            |
 
+### 6.1 Relational Database (MySQL/MariaDB)
+
+Database relasional digunakan untuk menyimpan data operasional utama yang memiliki struktur tabel dan relasi antar-entitas. Data yang termasuk ke dalam RDBMS antara lain toko, supplier, user, role, produk, pelanggan, teknisi, service request, transaksi, detail transaksi, dan log transaksi.
+
+Relasi utama berdasarkan ERD:
+
+- Satu `toko` dapat memiliki banyak `supplier`, `users`, `pelanggan`, dan `teknisi`.
+- Satu `supplier` dapat memasok banyak `produk`.
+- Satu `users` dapat membuat atau mengelola banyak `produk`.
+- Satu `pelanggan` dapat membuat banyak `service_request` dan `transaksi`.
+- Satu `teknisi` dapat mengambil atau menangani banyak `service_request`.
+- Satu `transaksi` dapat memiliki banyak `detail_transaksi` dan `log_transaksi`.
+- Satu `produk` dapat muncul di banyak `detail_transaksi`.
+
+### 6.2 Document Database (MongoDB)
+
+Selain RDBMS, backend CellTrack juga menggunakan MongoDB melalui Mongoose. MongoDB dipakai untuk data yang lebih fleksibel, bersifat event/log, atau tidak selalu membutuhkan relasi tabel yang kompleks. Koneksi MongoDB dikelola melalui file `config/db_mongo.js` dan menggunakan environment variable `MONGO_URI`.
+
+```text
+Express App
+   ↓
+connectMongoDB()
+   ↓
+Mongoose
+   ↓
+MongoDB Database
+   ↓
+Collections: Feedback, Notification, ServiceRequestStatus
+```
+
+Tujuan penggunaan MongoDB pada backend CellTrack:
+
+- Menyimpan feedback pelanggan dalam bentuk dokumen.
+- Menyimpan notifikasi stok atau aktivitas produk.
+- Menyimpan status service request yang dapat dibaca oleh role/user tertentu.
+- Mendukung struktur `readBy` berupa array dokumen untuk tracking siapa saja yang sudah membaca notifikasi/status.
+
+#### 6.2.1 MongoDB Collections
+
+| Collection / Model     | File Model                            | Fungsi Utama                                                                                      |
+| ---------------------- | ------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| `Feedback`             | `models/feedbackModel.js`             | Menyimpan feedback pelanggan, termasuk identitas pelanggan, pesan, rating, dan timestamp.         |
+| `Notification`         | `models/notificationModel.js`         | Menyimpan notifikasi produk/stok, pesan notifikasi, supplier terkait, dan daftar pembaca.         |
+| `ServiceRequestStatus` | `models/serviceRequestStatusModel.js` | Menyimpan riwayat/status service request dan daftar user/role yang sudah membaca status tersebut. |
+
+#### 6.2.2 Feedback Schema
+
+| Field          | Type   | Keterangan                                        |
+| -------------- | ------ | ------------------------------------------------- |
+| `id_pelanggan` | String | ID pelanggan yang mengirim feedback.              |
+| `name`         | String | Nama pelanggan.                                   |
+| `email`        | String | Email pelanggan, disimpan dalam format lowercase. |
+| `message`      | String | Isi feedback dari pelanggan.                      |
+| `rating`       | Number | Rating feedback dengan nilai 1 sampai 5.          |
+| `createdAt`    | Date   | Timestamp otomatis dari Mongoose.                 |
+| `updatedAt`    | Date   | Timestamp update otomatis dari Mongoose.          |
+
+#### 6.2.3 Notification Schema
+
+| Field         | Type         | Keterangan                                                    |
+| ------------- | ------------ | ------------------------------------------------------------- |
+| `id_produk`   | Number       | ID produk yang berkaitan dengan notifikasi.                   |
+| `message`     | String       | Isi pesan notifikasi.                                         |
+| `stok`        | Number       | Informasi stok produk.                                        |
+| `createdAt`   | Date         | Waktu notifikasi dibuat.                                      |
+| `id_supplier` | Number       | ID supplier terkait produk.                                   |
+| `readBy`      | Array Object | Daftar pembaca notifikasi. Berisi `role`, `id`, dan `readAt`. |
+
+#### 6.2.4 ServiceRequestStatus Schema
+
+| Field                | Type         | Keterangan                                                |
+| -------------------- | ------------ | --------------------------------------------------------- |
+| `id_service_request` | Number       | ID service request yang statusnya dicatat.                |
+| `status`             | String       | Status terbaru atau informasi perubahan status.           |
+| `createdAt`          | Date         | Waktu status dibuat.                                      |
+| `readBy`             | Array Object | Daftar pembaca status. Berisi `role`, `id`, dan `readAt`. |
+
+#### 6.2.5 MongoDB Data Flow
+
+```text
+Controller
+   ↓
+Mongoose Model
+   ↓
+MongoDB Collection
+   ↓
+Document Response / Notification Status
+```
+
+Contoh alur penggunaan MongoDB:
+
+1. Customer mengirim feedback melalui endpoint feedback.
+2. Controller menerima request dan memanggil `Feedback` model.
+3. Mongoose menyimpan dokumen feedback ke MongoDB.
+4. Untuk notifikasi/status, sistem membuat dokumen baru pada collection `Notification` atau `ServiceRequestStatus`.
+5. Ketika user membaca notifikasi/status, data pembaca ditambahkan ke array `readBy`.
+
+#### 6.2.6 Perbedaan Penyimpanan RDBMS dan MongoDB
+
+| Aspek       | MySQL/MariaDB                                    | MongoDB                                                |
+| ----------- | ------------------------------------------------ | ------------------------------------------------------ |
+| Jenis data  | Data utama yang terstruktur dan saling berelasi. | Data fleksibel berbasis dokumen.                       |
+| Contoh data | Produk, pelanggan, transaksi, service request.   | Feedback, notification, service request status.        |
+| Pola akses  | Query relasional, join, foreign key.             | Query dokumen, nested object, array seperti `readBy`.  |
+| Kelebihan   | Konsisten untuk transaksi dan relasi data.       | Fleksibel untuk log, feedback, status, dan notifikasi. |
+
 ---
 
 ## 7. API Documentation
