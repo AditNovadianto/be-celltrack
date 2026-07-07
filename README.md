@@ -403,6 +403,166 @@ Catatan deployment:
 - Aktifkan logging dan monitoring error.
 - Validasi callback Midtrans.
 
+### 11.1 Deployment Menggunakan Docker
+
+Selain dijalankan langsung menggunakan `npm install --production` dan `npm start`, backend CellTrack juga dapat dijalankan menggunakan Docker. Docker digunakan agar aplikasi backend berjalan pada environment yang konsisten, lebih mudah dipindahkan ke server lain, dan tidak bergantung langsung pada instalasi Node.js di host server.
+
+Pada konfigurasi Docker yang digunakan, backend berjalan sebagai satu service container bernama `celltrack-backend`. Service database tidak didefinisikan di `docker-compose.yml` karena aplikasi menggunakan shared database atau database yang sudah berjalan pada service/container lain. Oleh karena itu, koneksi ke MySQL/MariaDB dan MongoDB tetap diatur melalui file `.env`.
+
+#### 11.1.1 Dockerfile
+
+```dockerfile
+# Gunakan image Node.js versi Alpine (Ringan & Aman)
+FROM node:22-alpine
+
+# Set folder kerja
+WORKDIR /app
+
+# Copy package.json & package-lock.json
+COPY package*.json ./
+
+# Install dependencies
+# 'npm ci' lebih cepat & stabil untuk server daripada 'npm install'
+RUN npm ci --only=production
+
+# Copy seluruh source code
+COPY . .
+
+# Buka port 3000
+EXPOSE 3000
+
+# Jalankan aplikasi
+CMD ["node", "index.js"]
+```
+
+Penjelasan Dockerfile:
+
+| Bagian | Penjelasan |
+| ------ | ---------- |
+| `FROM node:22-alpine` | Menggunakan image Node.js versi 22 berbasis Alpine Linux yang lebih ringan. |
+| `WORKDIR /app` | Menentukan folder kerja utama di dalam container. |
+| `COPY package*.json ./` | Menyalin `package.json` dan `package-lock.json` terlebih dahulu agar proses build dependency lebih efisien. |
+| `RUN npm ci --only=production` | Meng-install dependency production berdasarkan `package-lock.json`, sehingga lebih stabil untuk deployment server. |
+| `COPY . .` | Menyalin seluruh source code backend ke dalam container. |
+| `EXPOSE 3000` | Mendokumentasikan bahwa aplikasi berjalan pada port 3000 di dalam container. |
+| `CMD ["node", "index.js"]` | Menjalankan aplikasi backend melalui file utama `index.js`. |
+
+#### 11.1.2 Docker Compose
+
+```yaml
+services:
+  app:
+    build: .
+    container_name: celltrack-backend
+    restart: always
+    env_file:
+      - ./.env
+    networks:
+      - private-net
+
+networks:
+  private-net:
+    external: true
+```
+
+Penjelasan `docker-compose.yml`:
+
+| Bagian | Penjelasan |
+| ------ | ---------- |
+| `services.app` | Mendefinisikan service utama untuk menjalankan backend CellTrack. |
+| `build: .` | Docker Compose akan melakukan build image berdasarkan `Dockerfile` pada folder project. |
+| `container_name: celltrack-backend` | Menentukan nama container backend agar lebih mudah dicek melalui perintah Docker. |
+| `restart: always` | Container akan otomatis berjalan kembali jika terjadi crash atau server melakukan reboot. |
+| `env_file: ./.env` | Environment variable dimuat dari file `.env`, seperti `DB_HOST`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`, `MONGO_URI`, `JWT_SECRET`, dan konfigurasi Midtrans/email. |
+| `networks: private-net` | Container backend dimasukkan ke jaringan Docker bernama `private-net`. |
+| `external: true` | Network `private-net` harus sudah tersedia terlebih dahulu di Docker host. |
+
+#### 11.1.3 Alur Deployment Docker
+
+```text
+Source Code Backend
+        ↓
+Dockerfile
+        ↓
+Docker Image
+        ↓
+Docker Compose
+        ↓
+Container celltrack-backend
+        ↓
+Private Docker Network
+        ↓
+Shared Database / MongoDB / Reverse Proxy
+```
+
+#### 11.1.4 Langkah Menjalankan Backend dengan Docker
+
+1. Pastikan Docker dan Docker Compose sudah terpasang di server.
+
+2. Clone repository backend:
+
+```bash
+git clone https://github.com/AditNovadianto/be-celltrack.git
+cd be-celltrack
+```
+
+3. Buat atau sesuaikan file `.env`:
+
+```env
+PORT=3000
+DB_HOST=
+DB_USER=
+DB_PASSWORD=
+DB_NAME=
+JWT_SECRET=
+MONGO_URI=
+SECRET_KEY=
+MIDTRANS_SERVER_KEY=
+MIDTRANS_IS_PRODUCTION=
+MIDTRANS_CALLBACK_TOKEN=
+EMAIL_USER=
+EMAIL_PASS=
+FRONTEND_URL=
+```
+
+4. Buat network eksternal jika belum tersedia:
+
+```bash
+docker network create private-net
+```
+
+5. Build dan jalankan container:
+
+```bash
+docker compose up -d --build
+```
+
+6. Cek status container:
+
+```bash
+docker ps
+```
+
+7. Lihat log aplikasi:
+
+```bash
+docker logs -f celltrack-backend
+```
+
+8. Menghentikan container:
+
+```bash
+docker compose down
+```
+
+#### 11.1.5 Catatan Penting Docker Deployment
+
+Karena service database tidak dibuat di dalam `docker-compose.yml`, backend diasumsikan menggunakan shared database atau database yang sudah berjalan di luar compose backend. Nilai `DB_HOST` dan `MONGO_URI` pada `.env` harus mengarah ke host database yang dapat dijangkau dari container `celltrack-backend`.
+
+Jika MySQL/MariaDB atau MongoDB juga berjalan sebagai container Docker, pastikan container database berada dalam network yang sama, yaitu `private-net`. Jika database berada di luar Docker, pastikan host, port, firewall, dan credential database sudah benar.
+
+Untuk production, file `.env` tidak boleh di-commit ke repository karena berisi data sensitif seperti password database, JWT secret, Midtrans server key, dan email password.
+
 ---
 
 ## 12. Contributing
